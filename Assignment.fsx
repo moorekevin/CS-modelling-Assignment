@@ -5,14 +5,14 @@
 open FSharp.Text.Lexing
 open System
 
-#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorTypesAST.fs"
-open CalculatorTypesAST
+#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentTypesAST.fs"
+open AssignmentTypesAST
 
-#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorParser.fs"
-open CalculatorParser
+#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentParser.fs"
+open AssignmentParser
 
-#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
-open CalculatorLexer
+#load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
+open AssignmentLexer
 
 // We define the evaluation function recursively, by induction on the structure
 // of arithmetic expressions (AST of type expr)
@@ -32,7 +32,7 @@ let parse input =
     // translate string into a buffer of characters
     let lexbuf = LexBuffer<char>.FromString input
     // translate the buffer into a stream of tokens and parse them
-    let res = CalculatorParser.start CalculatorLexer.tokenize lexbuf
+    let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
     // return the result of parsing (i.e. value of type "expr")
     res
 

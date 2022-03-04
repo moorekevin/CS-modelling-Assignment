@@ -1,14 +1,14 @@
-# 2 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 2 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
  
-module CalculatorLexer
+module AssignmentLexer
 open FSharp.Text.Lexing
 open System
 // open the module that defines the tokens
-open CalculatorParser
+open AssignmentParser
 // Set the language to English such that 4.0 is parsed as 4 and not 40.
 System.Globalization.CultureInfo.CurrentCulture <- new System.Globalization.CultureInfo("en-US")
 
-# 11 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 11 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -61,60 +61,60 @@ let rec _fslex_dummy () = _fslex_dummy()
 and tokenize  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
-# 24 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 24 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  tokenize lexbuf 
-# 66 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 66 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 1 -> ( 
-# 25 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 25 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; 
-# 71 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 71 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 2 -> ( 
-# 27 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 27 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  NUM(Double.Parse(LexBuffer<_>.LexemeString lexbuf)) 
-# 76 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 76 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 3 -> ( 
-# 28 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 28 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  TIMES 
-# 81 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 81 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 4 -> ( 
-# 29 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 29 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  DIV 
-# 86 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 86 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 5 -> ( 
-# 30 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 30 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  PLUS 
-# 91 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 91 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 6 -> ( 
-# 31 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 31 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  MINUS 
-# 96 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 96 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 7 -> ( 
-# 32 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 32 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  POW 
-# 101 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 101 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 8 -> ( 
-# 33 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 33 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  LPAR 
-# 106 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 106 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 9 -> ( 
-# 34 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 34 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  RPAR 
-# 111 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 111 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | 10 -> ( 
-# 35 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fsl"
+# 35 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fsl"
                                  EOF 
-# 116 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 116 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 3000000 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/FSharp/mandatory-assignment-master-303b1e1a5ced82e14a9bce5662a3be036aaf73d7/calculator/CalculatorLexer.fs"
+# 3000000 "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"

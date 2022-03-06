@@ -9,18 +9,6 @@
 
 module AssignmentTypesAST
 
-type command =
-  | AssignVarExpr of (String * aExpr)
-  | AssignArray of (String * aExpr * aExpr) // First: which array, second: index, third: value
-  | Skip
-  | CommandSeq of (command * command)
-  | IfExpr of (guardedCommands)
-  | DoExpr of (guardedCommands)
-
-type guardedCommands =
-  | BoolGC of (bExpr * command)  // bool -> command
-  | GCSequence of (guardedCommands * guardedCommands)
-
 type aExpr =
   | Num of float
   | Var of String
@@ -47,3 +35,15 @@ type bExpr =
   | GrEqExpr of (aExpr * aExpr)
   | LeExpr of (aExpr * aExpr)
   | LeEqExpr of (aExpr * aExpr)
+
+type command =
+  | AssignVarExpr of (String * aExpr)
+  | AssignArray of (String * aExpr * aExpr) // First: which array, second: index, third: value
+  | Skip
+  | CommandSeq of (command * command)
+  | IfExpr of (guardedCommands)
+  | DoExpr of (guardedCommands)
+
+and guardedCommands =
+  | BoolGC of (bExpr * command)  // bool -> command
+  | GCSequence of (guardedCommands * guardedCommands)

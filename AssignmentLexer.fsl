@@ -14,6 +14,9 @@ let digit       = ['0'-'9']
 let num         = digit+ ( '.' digit+)?  ('E' ('+'|'-')? digit+ )?
 let whitespace  = [' ' '\t']
 let newline     = "\n\r" | '\n' | '\r'
+// SKAL MÅSKE BEHOLDES IDK 
+// let var         = ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9']*
+// let listname    = ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9']*
 
 // We define now the rules for recognising and building tokens
 // for each of the tokens of our language we need a rule
@@ -25,6 +28,8 @@ rule tokenize = parse
 | newline       { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; }
 // deal with tokens that need to be built
 | num           { NUM(Double.Parse(LexBuffer<_>.LexemeString lexbuf)) }
+// | var           { VAR(LexBuffer<_>.LexemeString lexbuf) }
+// | listname      { LISTNAME(LexBuffer<_>.LexemeString lexbuf) }
 | '*'           { TIMES }
 | '/'           { DIV }
 | '+'           { PLUS }
@@ -56,3 +61,5 @@ rule tokenize = parse
 | "<="          {LEQ}
 | ">="          {GEQ}
 | "!="          {NEQ}
+| "True"        {TRUE}
+| "False"       {FALSE}

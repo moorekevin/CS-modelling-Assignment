@@ -19,45 +19,52 @@ open AssignmentLexer
 let rec evalAExpr e =
   match e with
     | Num(x) -> x
-    | TimesExpr(x,y) -> eval(x) * eval (y)
-    | DivExpr(x,y) -> eval(x) / eval (y)
-    | PlusExpr(x,y) -> eval(x) + eval (y)
-    | MinusExpr(x,y) -> eval(x) - eval (y)
-    | PowExpr(x,y) -> eval(x) ** eval (y)
-    | UPlusExpr(x) -> eval(x)
-    | UMinusExpr(x) -> - eval(x)
-    | Var(x) -> 
-    | ListAExpr(x,y) -> 
-and evalCommand e =
+    | TimesExpr(x,y) -> evalAExpr(x) * evalAExpr (y)
+    | DivExpr(x,y) -> evalAExpr(x) / evalAExpr (y)
+    | PlusExpr(x,y) -> evalAExpr(x) + evalAExpr (y)
+    | MinusExpr(x,y) -> evalAExpr(x) - evalAExpr (y)
+    | PowExpr(x,y) -> evalAExpr(x) ** evalAExpr (y)
+    | UPlusExpr(x) -> evalAExpr(x)
+    | UMinusExpr(x) -> - evalAExpr(x)
+    | Var(x) -> 1.0
+    | ListAExpr(x,y) -> 1.0
+
+let rec evalCommand e =
     match e with
-    | AssignVarExpr(x,v) -> 
-    | AssignArray(a,i,v) -> 
-    | Skip -> 
+    | AssignVarExpr(x,v) -> printf("TODO")
+    | AssignArray(a,i,v) -> printf("TODO")
+    | Skip -> printf("TODO")
     | CommandSeq(c1,c2) -> evalCommand c1
                            evalCommand c2
-    | IfExpr((b,c) :: res) -> if evalBExpr(b) then evalCommand(c) else Skip
-    | DoExpr(g) -> 
+    | IfExpr(g) -> printf("TODO") //if evalBExpr(b) then evalCommand(c) else Skip
+    | DoExpr(g) -> printf("TODO")
 and evalGuardedCommand e =
     match e with
     | BoolGC(b,c) -> [(b,c)]
     | GCSequence(g1,g2) -> (evalGuardedCommand g1) @ (evalGuardedCommand g2)
 
+// if
+//   true -> x := 2; y:= 2
+//   false -> y:= 3
+// fi
 
 let rec evalBExpr b =
     match b with
     | True -> true
     | False -> false
-    | AndExpr(b1,b2) -> evalBExpr(b1) & evalBExpr(b2)
+    | AndExpr(b1,b2) -> let b1 = evalBExpr(b1)
+                        let b2 = evalBExpr(b2)
+                        b1 && b2
     | OrExpr(b1,b2) -> let b1 = evalBExpr(b1)
                        let b2 = evalBExpr(b2)
                        b1 || b2
     | SCAndExpr(b1,b2) -> evalBExpr(b1) && evalBExpr(b2)
     | SCOrExpr(b1,b2) -> evalBExpr(b1) || evalBExpr(b2)
-    | NotExpr(b) -> not evalBExpr(b)
-    | EqExpr(a1,a2) -> evalAExpr(a1) == evalAExpr(a2)
+    | NotExpr(b) -> not (evalBExpr(b))
+    | EqExpr(a1,a2) -> (evalAExpr(a1)) = (evalAExpr(a2))
     | NotEqExpr(a1,a2) -> evalAExpr(a1) <> evalAExpr(a2)
     | GrExpr(a1,a2) -> evalAExpr(a1) > evalAExpr(a2)
-    | GrEqExpr(a1,a2) -> evalAExpr(a1) >= a2
+    | GrEqExpr(a1,a2) -> evalAExpr(a1) >= evalAExpr(a2)
     | LeExpr(a1,a2) -> evalAExpr(a1) < evalAExpr(a2)
     | LeEqExpr(a1,a2) -> evalAExpr(a1) <= evalAExpr(a2)
 

@@ -11,8 +11,8 @@ module AssignmentTypesAST
 
 type aExpr =
   | Num of float
-  | Var of String
-  | ListAExpr of (String * aExpr)
+  | Var of string
+  | ListAExpr of (string * aExpr)
   | TimesExpr of (aExpr * aExpr)
   | DivExpr of (aExpr * aExpr)
   | PlusExpr of (aExpr * aExpr)
@@ -37,8 +37,8 @@ type bExpr =
   | LeEqExpr of (aExpr * aExpr)
 
 type command =
-  | AssignVarExpr of (String * aExpr)
-  | AssignArray of (String * aExpr * aExpr) // First: which array, second: index, third: value
+  | AssignVarExpr of (string * aExpr)
+  | AssignArray of (string * aExpr * aExpr) // First: which array, second: index, third: value
   | Skip
   | CommandSeq of (command * command)
   | IfExpr of (guardedCommands)

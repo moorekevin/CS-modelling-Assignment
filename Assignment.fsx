@@ -14,6 +14,14 @@ open AssignmentParser
 #load "/Users/kevinmoore/Documents/DTU/Datalogisk Modellering/Assignment.nosync/CS-modelling-Assignment/AssignmentLexer.fs"
 open AssignmentLexer
 
+
+//let mutable initVarMap:(Map<string, float>) = Map.ofList []
+//let mutable initArrMap:(Map<string, Array>) = Map.ofList []
+
+open System.Collections.Generic
+let varDic = new Dictionary<string,float>()
+let arrDic = new Dictionary<string,Array>()
+
 // We define the evaluation function recursively, by induction on the structure
 // of arithmetic expressions (AST of type expr)
 let rec evalAExpr e =
@@ -26,13 +34,13 @@ let rec evalAExpr e =
     | PowExpr(x,y) -> evalAExpr(x) ** evalAExpr (y)
     | UPlusExpr(x) -> evalAExpr(x)
     | UMinusExpr(x) -> - evalAExpr(x)
-    | Var(x) -> 1.0
+    | Var(x) -> varDic.[x]
     | ListAExpr(x,y) -> 1.0
 
 let rec evalCommand e =
     match e with
-    | AssignVarExpr(x,v) -> printf("TODO")
-    | AssignArray(a,i,v) -> printf("TODO")
+    | AssignVarExpr(v,x) -> varDic.Add(v,evalAExpr(x))
+    | AssignArray(a,i,x) -> printf("TODO")
     | Skip -> printf("TODO")
     | CommandSeq(c1,c2) -> evalCommand c1
                            evalCommand c2
@@ -42,11 +50,6 @@ and evalGuardedCommand e =
     match e with
     | BoolGC(b,c) -> [(b,c)]
     | GCSequence(g1,g2) -> (evalGuardedCommand g1) @ (evalGuardedCommand g2)
-
-// if
-//   true -> x := 2; y:= 2
-//   false -> y:= 3
-// fi
 
 let rec evalBExpr b =
     match b with
@@ -68,34 +71,40 @@ let rec evalBExpr b =
     | LeExpr(a1,a2) -> evalAExpr(a1) < evalAExpr(a2)
     | LeEqExpr(a1,a2) -> evalAExpr(a1) <= evalAExpr(a2)
 
-
-// if
-// true -> x = x+1
-// false -> x:=2
-// fi
-
 // We
-// let parse input =
-//     // translate string into a buffer of characters
-//     let lexbuf = LexBuffer<char>.FromString input
-//     // translate the buffer into a stream of tokens and parse them
-//     let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
-//     // return the result of parsing (i.e. value of type "expr")
-//     res
+let parse input =
+    printf "1"
+    // translate string into a buffer of characters
+    let lexbuf = LexBuffer<char>.FromString input
+    printf "2"
+    // translate the buffer into a stream of tokens and parse them
+    let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
+    printf "3"
+    // return the result of parsing (i.e. value of type "expr")
+    res
 
 // We implement here the function that interacts with the user
-// let rec compute n =
-//     if n = 0 then
-//         printfn "Bye bye"
-//     else
-//         printf "Enter an arithmetic expression: "
-//         try
-//         // We parse the input string
-//         let e = parse (Console.ReadLine())
-//         // and print the result of evaluating it
-//         printfn "Result: %f" (eval(e))
-//         compute n
-//         with err -> compute (n-1)
+let rec compute n =
+    printf "Enter an expression: "
+    try
+        // We parse the input string
+        let e = parse (Console.ReadLine())
+
+        // and print the result of evaluating it
+        printfn "Result: " 
+        compute n
+    with err -> compute n
+
+// -> (Map<string,float>, Map<string,Array>)
+
+// Assign var:
+// x := 1
+// Assign array:
+// x[1] := 1
+// get var:
+// x
+// get array:
+// x[1]
 
 // Start interacting with the user
 // compute 3

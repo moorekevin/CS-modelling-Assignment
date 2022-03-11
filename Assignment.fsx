@@ -1,4 +1,4 @@
-// This script implements our interactive calculator
+
 
 // We need to import a couple of modules, including the generated lexer and parser
 #r "/Users/kevinmoore/fsharp/FsLexYacc.Runtime.10.0.0/lib/net46/FsLexYacc.Runtime.dll"
@@ -21,10 +21,8 @@ open AssignmentLexer
 open System.Collections.Generic
 let varDic = new Dictionary<string,float>()
 let arrDic = new Dictionary<string,Array>()
-
-// We define the evaluation function recursively, by induction on the structure
-// of arithmetic expressions (AST of type expr)
-// x:=0
+///////////////////////////////
+/// TASK 1: PRETTY PRINTING ///
 (*
 let rec printC c =
     match c with
@@ -65,6 +63,45 @@ and printA e : string =
     | UPlusExpr(x) -> "+" + printA(x)
     | UMinusExpr(x) -> "-(" + printA(x) + ")" 
 *)
+///////////////////////////////
+//////////// TASK 2 ///////////
+///////////////////////////////
+
+// q▷ -> q1 [label = "y:=1"];
+// q1 -> q2 [label = "x>0"];
+// q2 -> q3 [label = "y:=x*y"];
+// q3 -> q1 [label = "x:=x-1"];
+// q1 -> q◀ [label = "!(x>0)"];
+
+let rec printA e : string =
+    match e with
+    | Num(x) -> (string x) //string x
+    | Var(x) -> x
+    | ListAExpr(x,y) -> x + "["+ (printA y)+"]"
+    | TimesExpr(x,y) -> "(" + (printA x) + "*" + (printA y) + ")"
+    | DivExpr(x,y) -> "(" + (printA x) + "/" + (printA y) + ")"
+    | PlusExpr(x,y) -> "(" + (printA x) + "+" + (printA y) + ")"
+    | MinusExpr(x,y) -> "(" + (printA x) + "-" + (printA y) + ")"
+    | PowExpr(x,y) -> "(" + printA(x) + "^" + printA(y) + ")"
+    | UPlusExpr(x) -> printA(x)
+    | UMinusExpr(x) -> "-(" + printA(x) + ")" 
+
+let graphBuilder (int1:int) (int2:int) labelString =
+    match (int1,int2) with
+    | (0,100000) -> "q" + string int1 + " -> q\u25C0" + " [label = \"" + labelString + "\"];"
+    | (0,_) -> "q\u25B7" + " -> q" + string int2 + " [label = \"" + labelString + "\"];"
+    | (_,100000) -> "q" + string int1 + " -> q" + string int2 + " [label = \"" + labelString + "\"];"
+    | (_,_) -> "q" + string int1 + " -> q" + string int2 + " [label = \"" + labelString + "\"];"
+
+let rec graphPrintC e acc accInt = 
+    match e with
+    | AssignVarExpr(v,x) -> (acc + "\n"+ graphBuilder accInt (accInt+1) (v + ":=" + printA x) , accInt+1)    //varDic.Add(v,evalAExpr(x))
+    | AssignArray(a,i,x) -> (acc + "\n"+ graphBuilder accInt (accInt+1) (a + "[" + printA(i) + "]" + ":=" + printA x), accInt+1)
+    | Skip -> (acc + "\n"+ graphBuilder accInt (accInt+1) ("SKIP"), accInt+1)
+    | CommandSeq(c1,c2) -> let (accNew,xNew) = graphPrintC c1 acc accInt
+                           graphPrintC c2 accNew xNew
+    | IfExpr(g) -> ("",0)
+    | DoExpr(g) -> ("",0)
 
 // We
 let parse input =
@@ -83,7 +120,8 @@ let rec compute n =
         let e = parse (Console.ReadLine())
 
         // and print the result of evaluating it
-        printfn "Result: %s" (printC e)
+        //printfn "Result: \n %s" (fst(graphPrintC e "digraph program_graph {rankdir=LR;\nnode [shape = circle]; q\u25B7;\nnode [shape = doublecircle]; q\u25C0;\nnode [shape = circle]" 0) + "\n}")
+        compileC e "q▷" "q◀" 0
         compute n-1
     with err -> compute n
 
@@ -100,3 +138,7 @@ let rec compute n =
 
 // Start interacting with the user
 // compute 3
+
+
+
+

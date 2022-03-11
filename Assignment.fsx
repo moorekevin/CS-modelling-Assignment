@@ -24,21 +24,8 @@ let arrDic = new Dictionary<string,Array>()
 
 // We define the evaluation function recursively, by induction on the structure
 // of arithmetic expressions (AST of type expr)
-(*let rec evalAExpr e =
-  match e with
-    | Num(x) -> x
-    | TimesExpr(x,y) -> evalAExpr(x) * evalAExpr (y)
-    | DivExpr(x,y) -> evalAExpr(x) / evalAExpr (y)
-    | PlusExpr(x,y) -> evalAExpr(x) + evalAExpr (y)
-    | MinusExpr(x,y) -> evalAExpr(x) - evalAExpr (y)
-    | PowExpr(x,y) -> evalAExpr(x) ** evalAExpr (y)
-    | UPlusExpr(x) -> evalAExpr(x)
-    | UMinusExpr(x) -> - evalAExpr(x)
-    | Var(x) -> varDic.[x]
-    | ListAExpr(x,y) -> 1.0*)
-
-
 // x:=0
+(*
 let rec printC c =
     match c with
     | AssignVarExpr(v,x) -> "ASSIGN ("+ v + ", " + printA(x) + ")"    //varDic.Add(v,evalAExpr(x))
@@ -76,7 +63,8 @@ and printA e : string =
     | MinusExpr(x,y) -> "MINUS (" + (printA x) + ", " + (printA y) + ")"
     | PowExpr(x,y) -> "POWER (" + printA(x) + ", " + printA(y) + ")"
     | UPlusExpr(x) -> "+" + printA(x)
-    | UMinusExpr(x) -> "-(" + printA(x) + ")"
+    | UMinusExpr(x) -> "-(" + printA(x) + ")" 
+*)
 
 // We
 let parse input =

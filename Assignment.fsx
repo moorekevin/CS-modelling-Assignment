@@ -111,6 +111,14 @@ let parse input =
     let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
     // return the result of parsing (i.e. value of type "expr")
     res
+    
+let rec compileC inputC firstState secondState noOfNewStates =
+        match inputC with
+        | AssignVarExpr(v,x) -> sprintf "%s -> %s [label = \"%s:=%s\"];\n" firstState secondState v (printA x)
+        // | IfCommandExpr(s) -> String.Format("[label = a \"{0}\"]", s)
+        | CommandSeq(c1,c2) -> (compileC c1 firstState (sprintf "q%d" (noOfNewStates+1)) (noOfNewStates+1)) + (compileC c2 (sprintf "q%d" (noOfNewStates+1)) secondState (noOfNewStates+1))
+        
+
 
 // We implement here the function that interacts with the user
 let rec compute n =

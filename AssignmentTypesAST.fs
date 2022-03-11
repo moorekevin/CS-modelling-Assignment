@@ -22,8 +22,7 @@ type aExpr =
   | UMinusExpr of (aExpr)
 
 type bExpr =
-  | True
-  | False
+  | BoolExpr of bool // true or false
   | AndExpr of (bExpr * bExpr)   // &
   | OrExpr of (bExpr * bExpr)    // |
   | SCAndExpr of (bExpr * bExpr) // Short Circuit And &&
@@ -41,9 +40,10 @@ type command =
   | AssignArray of (string * aExpr * aExpr) // First: which array, second: index, third: value
   | Skip
   | CommandSeq of (command * command)
-  | IfExpr of (guardedCommands)
-  | DoExpr of (guardedCommands)
+  | IfExpr of (guardedCommand)
+  | DoExpr of (guardedCommand)
 
-and guardedCommands =
+and guardedCommand =
   | BoolGC of (bExpr * command)  // bool -> command
-  | GCSequence of (guardedCommands * guardedCommands)
+  | GCSequence of (guardedCommand * guardedCommand)
+  | Test of string

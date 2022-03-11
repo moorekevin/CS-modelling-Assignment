@@ -24,7 +24,7 @@ let arrDic = new Dictionary<string,Array>()
 
 // We define the evaluation function recursively, by induction on the structure
 // of arithmetic expressions (AST of type expr)
-let rec evalAExpr e =
+(*let rec evalAExpr e =
   match e with
     | Num(x) -> x
     | TimesExpr(x,y) -> evalAExpr(x) * evalAExpr (y)
@@ -35,51 +35,55 @@ let rec evalAExpr e =
     | UPlusExpr(x) -> evalAExpr(x)
     | UMinusExpr(x) -> - evalAExpr(x)
     | Var(x) -> varDic.[x]
-    | ListAExpr(x,y) -> 1.0
+    | ListAExpr(x,y) -> 1.0*)
 
-let rec evalCommand e =
-    match e with
-    | AssignVarExpr(v,x) -> varDic.Add(v,evalAExpr(x))
-    | AssignArray(a,i,x) -> printf("TODO")
-    | Skip -> printf("TODO")
-    | CommandSeq(c1,c2) -> evalCommand c1
-                           evalCommand c2
-    | IfExpr(g) -> printf("TODO") //if evalBExpr(b) then evalCommand(c) else Skip
-    | DoExpr(g) -> printf("TODO")
-and evalGuardedCommand e =
-    match e with
-    | BoolGC(b,c) -> [(b,c)]
-    | GCSequence(g1,g2) -> (evalGuardedCommand g1) @ (evalGuardedCommand g2)
 
-let rec evalBExpr b =
+// x:=0
+let rec printC c =
+    match c with
+    | AssignVarExpr(v,x) -> "ASSIGN ("+ v + ", " + printA(x) + ")"    //varDic.Add(v,evalAExpr(x))
+    | AssignArray(a,i,x) -> "ASSIGN ("+ a + "[" + printA(i) + "] , " + printA(x) + ")" 
+    | Skip -> "SKIP "
+    | CommandSeq(c1,c2) -> "COMMANDSeq (" + printC(c1) + " ; " + printC(c2) + ")"
+    | IfExpr(g) -> "IF (" + printGC(g) + ")"
+    | DoExpr(g) -> "DO (" + printGC(g) + ")"
+and printGC g =
+    match g with
+    | BoolGC(b,c) -> "BoolGC(" + printB(b) + " -> " + printC(c) + ")"  // bool -> GC
+    | GCSequence(g1,g2) -> "GCSeq (" + printGC(g1) + " [] " + printGC(g2) + ")"
+and printB b =
     match b with
-    | True -> true
-    | False -> false
-    | AndExpr(b1,b2) -> let b1 = evalBExpr(b1)
-                        let b2 = evalBExpr(b2)
-                        b1 && b2
-    | OrExpr(b1,b2) -> let b1 = evalBExpr(b1)
-                       let b2 = evalBExpr(b2)
-                       b1 || b2
-    | SCAndExpr(b1,b2) -> evalBExpr(b1) && evalBExpr(b2)
-    | SCOrExpr(b1,b2) -> evalBExpr(b1) || evalBExpr(b2)
-    | NotExpr(b) -> not (evalBExpr(b))
-    | EqExpr(a1,a2) -> (evalAExpr(a1)) = (evalAExpr(a2))
-    | NotEqExpr(a1,a2) -> evalAExpr(a1) <> evalAExpr(a2)
-    | GrExpr(a1,a2) -> evalAExpr(a1) > evalAExpr(a2)
-    | GrEqExpr(a1,a2) -> evalAExpr(a1) >= evalAExpr(a2)
-    | LeExpr(a1,a2) -> evalAExpr(a1) < evalAExpr(a2)
-    | LeEqExpr(a1,a2) -> evalAExpr(a1) <= evalAExpr(a2)
+    | BoolExpr(b) -> if b then "true" else "false"
+    | AndExpr(b1,b2) -> "("+printB(b1) + "&" + printB(b2)+")"
+    | OrExpr(b1,b2) -> "("+printB(b1) + "|" + printB(b2)+")"
+    | SCAndExpr(b1,b2) -> "("+printB(b1) + "&&" + printB(b2)+")"
+    | SCOrExpr(b1,b2) -> "("+printB(b1) + "||" + printB(b2)+")"
+    | NotExpr(b) -> "!("+printB(b)+")"
+    | EqExpr(a1,a2) -> "(" + printA(a1) + "==" + printA(a2) + ")"
+    | NotEqExpr(a1,a2) -> "(" + printA(a1) + "!=" + printA(a2) + ")"
+    | GrExpr(a1,a2) -> "(" + printA(a1) + ">" + printA(a2) + ")"
+    | GrEqExpr(a1,a2) -> "(" + printA(a1) + ">=" + printA(a2) + ")"
+    | LeExpr(a1,a2) -> "(" + printA(a1) + "<" + printA(a2) + ")"
+    | LeEqExpr(a1,a2) -> "(" + printA(a1) + "<=" + printA(a2) + ")"
+and printA e : string =
+    match e with
+    | Num(x) -> (string x) //string x
+    | Var(x) -> x
+    | ListAExpr(x,y) -> x + "["+ (printA y)+"]"
+    | TimesExpr(x,y) -> "TIMES (" + (printA x) + ", " + (printA y) + ")"
+    | DivExpr(x,y) -> "DIV (" + (printA x) + ", " + (printA y) + ")"
+    | PlusExpr(x,y) -> "PLUS (" + (printA x) + ", " + (printA y) + ")"
+    | MinusExpr(x,y) -> "MINUS (" + (printA x) + ", " + (printA y) + ")"
+    | PowExpr(x,y) -> "POWER (" + printA(x) + ", " + printA(y) + ")"
+    | UPlusExpr(x) -> "+" + printA(x)
+    | UMinusExpr(x) -> "-(" + printA(x) + ")"
 
 // We
 let parse input =
-    printf "1"
     // translate string into a buffer of characters
     let lexbuf = LexBuffer<char>.FromString input
-    printf "2"
     // translate the buffer into a stream of tokens and parse them
     let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
-    printf "3"
     // return the result of parsing (i.e. value of type "expr")
     res
 
@@ -91,8 +95,8 @@ let rec compute n =
         let e = parse (Console.ReadLine())
 
         // and print the result of evaluating it
-        printfn "Result: " 
-        compute n
+        printfn "Result: %s" (printC e)
+        compute n-1
     with err -> compute n
 
 // -> (Map<string,float>, Map<string,Array>)

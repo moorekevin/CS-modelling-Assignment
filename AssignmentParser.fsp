@@ -5,9 +5,9 @@ open AssignmentTypesAST
 
 // Declare the tokens (terminal symbols)
 %token <float> NUM
-%token <String> VAR LISTNAME
+%token <string> VAR
 %token TIMES DIV PLUS MINUS POW LPAR RPAR EOF
-%token ASSIGN SEMICOLON SKIP LBRACKET RBRACKET BRACKETS IF FI DO OD ASSERTS SCOR OR SCAND AND EQ LE LEQ GR GEQ NEQ NOT TRUE FALSE
+%token ASSIGN SEMICOLON SKIP LBRACKET RBRACKET IF FI DO OD ASSERTS OR AND EQ LE GR NOT TRUE FALSE
 // NOTE: the actual formats of these tokens are defined in the lexer file
 //       as regular expressions
 
@@ -26,7 +26,7 @@ open AssignmentTypesAST
 // We specify the return type of each of then non-terminal symbols
 %type <command> start
 %type <command> command
-%type <guardedCommands> guardedCommand
+%type <guardedCommand> guardedCommand
 %type <aExpr> aExpr0
 %type <aExpr> aExpr1
 %type <aExpr> aExpr2
@@ -59,20 +59,20 @@ start: command EOF             { $1 }
 // | a = a | a != a | a > a | a >= a | a < a | a <= a | (b)
 
 command:
-  | VAR ASSIGN aExpr0                                                        { AssignVarExpr($1, $3) }
   | VAR ASSIGN aExpr0 SEMICOLON command                                      { CommandSeq(AssignVarExpr($1, $3), $5) }
-  | SKIP                                                                     { Skip }
+  | VAR ASSIGN aExpr0                                                        { AssignVarExpr($1, $3) }
   | SKIP SEMICOLON command                                                   { CommandSeq(Skip, $3)}
-  | LISTNAME LBRACKET aExpr0 RBRACKET ASSIGN aExpr0 SEMICOLON command        { CommandSeq(AssignArray($1, $3, $6), $8) }
-  | LISTNAME LBRACKET aExpr0 RBRACKET ASSIGN aExpr0                          { AssignArray($1, $3, $6) } // A[a] := a  
-  | IF guardedCommand FI                                                     { IfExpr($2) }
+  | SKIP                                                                     { Skip }
+  | VAR LBRACKET aExpr0 RBRACKET ASSIGN aExpr0 SEMICOLON command            { CommandSeq(AssignArray($1, $3, $6), $8) }
+  | VAR LBRACKET aExpr0 RBRACKET ASSIGN aExpr0                              { AssignArray($1, $3, $6) } // A[a] := a  
   | IF guardedCommand FI SEMICOLON command                                   { CommandSeq(IfExpr($2), $5) }
-  | DO guardedCommand OD                                                     { DoExpr($2) }
+  | IF guardedCommand FI                                                     { IfExpr($2) }
   | DO guardedCommand OD SEMICOLON command                                   { CommandSeq(DoExpr($2), $5) }
+  | DO guardedCommand OD                                                     { DoExpr($2) }
 
 guardedCommand:
+  | bExpr0 ASSERTS command LBRACKET RBRACKET guardedCommand                   { GCSequence(BoolGC($1, $3), $6) }
   | bExpr0 ASSERTS command                                                    { BoolGC($1, $3) } 
-  | bExpr0 ASSERTS command BRACKETS guardedCommand                            { GCSequence(BoolGC($1, $3), $5) }
 
 // Arithmetic Expressions (Priority 0 to 3 highest)
 aExpr0:
@@ -94,33 +94,33 @@ aExpr3:
   | MINUS aExpr3                          { UMinusExpr($2) }
   | NUM                                   { Num($1) }
   | VAR                                   { Var($1) }
-  | LISTNAME LBRACKET aExpr0 RBRACKET     { ListAExpr($1,$3) }
+  | VAR LBRACKET aExpr0 RBRACKET          { ListAExpr($1,$3) }
   | LPAR aExpr0 RPAR                      { $2 }
   
 // Boolean Expressions (Priority 0 to 3 highest)
 bExpr0:
-  | bExpr0 SCOR bExpr1                    { SCOrExpr($1, $3) }
+  | bExpr0 OR OR bExpr1                   { SCOrExpr($1, $4) }
   | bExpr0 OR bExpr1                      { OrExpr($1, $3) }
   | bExpr1                                { $1 }
 
 bExpr1:
-  | bExpr1 SCAND bExpr2                   { SCAndExpr($1, $3) }
+  | bExpr1 AND AND bExpr2                 { SCAndExpr($1, $4) }
   | bExpr1 AND bExpr2                     { AndExpr($1, $3) }
   | bExpr2                                { $1 }
 
 bExpr2:
   | aExpr0 EQ aExpr0                      { EqExpr($1, $3) }
+  | aExpr0 LE EQ aExpr0                   { LeEqExpr($1, $4) }
   | aExpr0 LE aExpr0                      { LeExpr($1, $3) }
-  | aExpr0 LEQ aExpr0                     { LeEqExpr($1, $3) }
+  | aExpr0 GR EQ aExpr0                   { GrEqExpr($1, $4) }
   | aExpr0 GR aExpr0                      { GrExpr($1, $3) }
-  | aExpr0 GEQ aExpr0                     { GrEqExpr($1, $3) }
-  | aExpr0 NEQ aExpr0                     { NotEqExpr($1, $3) }
+  | aExpr0 NOT EQ aExpr0                  { NotEqExpr($1, $4) }
   | bExpr3                                { $1 }
 
 bExpr3:
   | NOT bExpr3                            { NotExpr($2) }
-  | TRUE                                  { True }
-  | FALSE                                 { False }
+  | TRUE                                  { BoolExpr(true) }
+  | FALSE                                 { BoolExpr(false) }
   | LPAR bExpr0 RPAR                      { $2 }
 
 // Again, the code annotation specifies the result of parsing

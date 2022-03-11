@@ -6,22 +6,16 @@ type token =
   | SKIP
   | LBRACKET
   | RBRACKET
-  | BRACKETS
   | IF
   | FI
   | DO
   | OD
   | ASSERTS
-  | SCOR
   | OR
-  | SCAND
   | AND
   | EQ
   | LE
-  | LEQ
   | GR
-  | GEQ
-  | NEQ
   | NOT
   | TRUE
   | FALSE
@@ -33,8 +27,7 @@ type token =
   | LPAR
   | RPAR
   | EOF
-  | VAR of (String)
-  | LISTNAME of (String)
+  | VAR of (string)
   | NUM of (float)
 type tokenId = 
     | TOKEN_ASSIGN
@@ -42,22 +35,16 @@ type tokenId =
     | TOKEN_SKIP
     | TOKEN_LBRACKET
     | TOKEN_RBRACKET
-    | TOKEN_BRACKETS
     | TOKEN_IF
     | TOKEN_FI
     | TOKEN_DO
     | TOKEN_OD
     | TOKEN_ASSERTS
-    | TOKEN_SCOR
     | TOKEN_OR
-    | TOKEN_SCAND
     | TOKEN_AND
     | TOKEN_EQ
     | TOKEN_LE
-    | TOKEN_LEQ
     | TOKEN_GR
-    | TOKEN_GEQ
-    | TOKEN_NEQ
     | TOKEN_NOT
     | TOKEN_TRUE
     | TOKEN_FALSE
@@ -70,7 +57,6 @@ type tokenId =
     | TOKEN_RPAR
     | TOKEN_EOF
     | TOKEN_VAR
-    | TOKEN_LISTNAME
     | TOKEN_NUM
     | TOKEN_end_of_input
     | TOKEN_error

@@ -44,6 +44,7 @@ rule tokenize = parse
 | "fi"          { FI }
 | "do"          { DO }
 | "od"          { OD }
+| "skip"        { SKIP }
 // Boolean tokens
 | '&'           {AND}
 | '!'           {NOT}

@@ -46,4 +46,3 @@ type command =
 and guardedCommand =
   | BoolGC of (bExpr * command)  // bool -> command
   | GCSequence of (guardedCommand * guardedCommand)
-  | Test of string

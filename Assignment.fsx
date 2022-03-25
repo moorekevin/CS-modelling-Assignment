@@ -73,7 +73,7 @@ and printA e : string =
 // q1 -> q◀ [label = "!(x>0)"];
 
 // AUX functions for printing
-let mutable freshCounter = 0
+(*let mutable freshCounter = 0
 
 let printNode i = 
     if i = 0 then "q\u25B7"
@@ -136,19 +136,8 @@ and doneGraphPrintGC g accStr i1 i2 =
     | BoolGC(b,c) -> freshCounter <- freshCounter + 1
                      accStr + "\n" + graphBuilder i1 i2 (printB (NotExpr(b)))
     | GCSequence(g1,g2) -> doneGraphPrintGC g2 (doneGraphPrintGC g1 accStr i1 i2) i1 i2
-    
 
-// let rec graphPrintC e accStr i1 i2 = 
-//     match e with
-//     | AssignVarExpr(v,x) -> (accStr + "\n"+ (graphBuilder i1 (i1+1)) (v + ":=" + printA x) , i1+1)    //varDic.Add(v,evalAExpr(x))
-//     | AssignArray(a,i,x) -> (accStr + "\n"+ (graphBuilder i1 (i1+1)) (a + "[" + printA(i) + "]" + ":=" + printA x), i1+1)
-//     | Skip -> (accStr + "\n"+ graphBuilder i1 (i1+1) ("SKIP"), i1+1)
-//     | CommandSeq(c1,c2) -> let (accNew,xNew) = graphPrintC c1 accStr i1
-//                            graphPrintC c2 accNew xNew
-//     | IfExpr(g) -> ("",System.Byte.MaxValue)
-//     | DoExpr(g) -> ("",0)
-    
-// We
+// We parse the input 
 let parse input =
     // translate string into a buffer of characters
     let lexbuf = LexBuffer<char>.FromString input
@@ -156,13 +145,6 @@ let parse input =
     let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
     // return the result of parsing (i.e. value of type "expr")
     res
-(*
-let rec compileC inputC firstState secondState noOfNewStates =
-        match inputC with
-        | AssignVarExpr(v,x) -> sprintf "%s -> %s [label = \"%s:=%s\"];\n" firstState secondState v (printA x)
-        // | IfCommandExpr(s) -> String.Format("[label = a \"{0}\"]", s)
-        | CommandSeq(c1,c2) -> (compileC c1 firstState (sprintf "q%d" (noOfNewStates+1)) (noOfNewStates+1)) + (compileC c2 (sprintf "q%d" (noOfNewStates+1)) secondState (noOfNewStates+1))
-*)      
 
 // We implement here the function that interacts with the user
 let rec compute n =
@@ -178,20 +160,90 @@ let rec compute n =
         printfn "Result: \n%s%s" (graphPrintC e initialCode 0 numVar.MaxValue) "}"
     with err -> compute n
 
-// -> (Map<string,float>, Map<string,Array>)
 
-// Assign var:
-// x := 1
-// Assign array:
-// x[1] := 1
-// get var:
-// x
-// get array:
-// x[1]
+*)
+/// TASK 3 ///
+
+open System.Collections.Generic
+let varDic = new Dictionary<string,float>()
+let arrDic = new Dictionary<string,Array>()
+
+// We define the evaluation function recursively, by induction on the structure
+// of arithmetic expressions (AST of type expr)
+let rec evalAExpr e =
+  match e with
+    | Num(x) -> x
+    | TimesExpr(x,y) -> evalAExpr(x) * evalAExpr (y)
+    | DivExpr(x,y) -> evalAExpr(x) / evalAExpr (y)
+    | PlusExpr(x,y) -> evalAExpr(x) + evalAExpr (y)
+    | MinusExpr(x,y) -> evalAExpr(x) - evalAExpr (y)
+    | PowExpr(x,y) -> evalAExpr(x) ** evalAExpr (y)
+    | UPlusExpr(x) -> evalAExpr(x)
+    | UMinusExpr(x) -> - evalAExpr(x)
+    | Var(x) -> varDic.[x]
+    | ListAExpr(x,y) -> 1.0
+
+let rec evalBExpr b =
+    match b with
+    | AndExpr(b1,b2) -> let b1 = evalBExpr(b1)
+                        let b2 = evalBExpr(b2)
+                        b1 && b2
+    | OrExpr(b1,b2) -> let b1 = evalBExpr(b1)
+                       let b2 = evalBExpr(b2)
+                       b1 || b2
+    | SCAndExpr(b1,b2) -> evalBExpr(b1) && evalBExpr(b2)
+    | SCOrExpr(b1,b2) -> evalBExpr(b1) || evalBExpr(b2)
+    | NotExpr(b) -> not (evalBExpr(b))
+    | EqExpr(a1,a2) -> (evalAExpr(a1)) = (evalAExpr(a2))
+    | NotEqExpr(a1,a2) -> evalAExpr(a1) <> evalAExpr(a2)
+    | GrExpr(a1,a2) -> evalAExpr(a1) > evalAExpr(a2)
+    | GrEqExpr(a1,a2) -> evalAExpr(a1) >= evalAExpr(a2)
+    | LeExpr(a1,a2) -> evalAExpr(a1) < evalAExpr(a2)
+    | LeEqExpr(a1,a2) -> evalAExpr(a1) <= evalAExpr(a2)
+    | BoolExpr(b) -> b
+
+let rec evalCommand e =
+    match e with
+    | AssignVarExpr(v,x) -> let ok = varDic.Remove(v)
+                            varDic.Add(v,evalAExpr(x))
+                            None
+    | AssignArray(a,i,x) -> None
+    | Skip -> None
+    | CommandSeq(c1,c2) -> let ok = evalCommand c1
+                           evalCommand c2
+    | IfExpr(g) -> evalGuardedCommand g
+    | DoExpr(g) -> None
+and evalGuardedCommand e =
+    match e with
+    | BoolGC(b,c) -> if (evalBExpr b) then (evalCommand c) else evalCommand Skip
+    | GCSequence(g1,g2) ->  let ok = evalGuardedCommand g1
+                            evalGuardedCommand g2
+
+
+    
+// We
+
+let parse input =
+    // translate string into a buffer of characters
+    let lexbuf = LexBuffer<char>.FromString input
+    // translate the buffer into a stream of tokens and parse them
+    let res = AssignmentParser.start AssignmentLexer.tokenize lexbuf
+    // return the result of parsing (i.e. value of type "expr")
+    res
+
+let rec compute n =
+    printf "Enter an expression: "
+    try
+        // We parse the input string
+        let e = parse (Console.ReadLine())
+        let ok = evalCommand e
+
+        // and print the result of evaluating it
+
+        printfn "Result:"
+        for pair in varDic do
+            printfn "%A" pair
+    with err -> compute n
 
 // Start interacting with the user
 // compute 3
-
-
-
-
